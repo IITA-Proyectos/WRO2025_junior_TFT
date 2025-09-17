@@ -1,5 +1,6 @@
 #!/usr/bin/env pybricks-micropython
 from Conexiones.connections import *
+import math, time
 
 def mover_con_pid_sin_reiniciar(distancia_mm, angulo, velocidad=100, kp=1, ki=0.07, kd=0.1):
     robot.reset()             # Reinicia medición de distancia
@@ -17,14 +18,6 @@ def mover_con_pid_sin_reiniciar(distancia_mm, angulo, velocidad=100, kp=1, ki=0.
         wait(5)   # Pausa pequeña para estabilidad
     robot.stop()  # Detiene motores al finalizar
 
-
-# Funcion para leer el array_sensor de luz en el piso del frente
-def leer_array_sensor():
-    lecturas = []
-    for reg in range(0x42, 0x4A):  # 0x42 to 0x49 inclusive
-        value = light_sensor_frontal.read(reg, 1)[0]
-        lecturas.append(value)
-    return lecturas
 
 def giro_izq(angulo, velocidad=200):
     reloj = StopWatch()
@@ -72,3 +65,302 @@ def subir_pala(altura):
 def bajar_pala(altura):
     pala.run_angle(100, -altura)   # Bajar pala
     wait(500)
+
+
+# --------------- Funciones nuevas ---------------
+# Funcion para leer el array_sensor de luz en el piso del frente
+def leer_array_sensor():
+    lecturas = []
+    for reg in range(0x42, 0x4A):  # 0x42 to 0x49 inclusive
+        value = light_sensor_frontal.read(reg, 1)[0]
+        lecturas.append(value)
+    return lecturas
+
+def calculate_line_error(values):
+    positions = [-400, -300, -200, -100, 100, 200, 300, 400]
+    weights = [100 - v for v in values]  # Invert: black = high weight
+    total_weight = sum(weights)
+    if total_weight == 0:
+        return 0  # Avoid division by zero
+    error = sum(w * p for w, p in zip(weights, positions)) / total_weight
+    return int(error) / 100
+
+def turn_to_angle(target_angle, speed=200):
+    initial_angle = gyro.angle()
+    if target_angle > 0:
+        while gyro.angle() - initial_angle < target_angle:
+            motor_izquierdo.run(speed)
+            motor_derecho.run(-speed)
+        motor_izquierdo.stop()
+        motor_derecho.stop()
+        # Correction step
+        while abs(gyro.angle() - initial_angle - target_angle) > 0.5:
+            error = target_angle - (gyro.angle() - initial_angle)
+            correction_speed = 100 if error > 0 else -100
+            motor_izquierdo.run(correction_speed)
+            motor_derecho.run(-correction_speed)
+        motor_izquierdo.stop()
+        motor_derecho.stop()
+    else:
+        while gyro.angle() - initial_angle > target_angle:
+            motor_izquierdo.run(-speed)
+            motor_derecho.run(speed)
+        motor_izquierdo.stop()
+        motor_derecho.stop()
+        # Correction step
+        while abs(gyro.angle() - initial_angle - target_angle) > 0.5:
+            error = target_angle - (gyro.angle() - initial_angle)
+            correction_speed = 100 if error < 0 else -100
+            motor_izquierdo.run(-correction_speed)
+            motor_derecho.run(correction_speed)
+        motor_izquierdo.stop()
+        motor_derecho.stop()
+
+
+def move_distance_cm(distance_cm, max_speed):
+
+    '''
+    Move the robot the given distance (in centimeters) using DriveBase (robot) with gyro correction for high precision.
+    max_speed: mm/s (positive number)
+
+    Use
+        Funciones.move_distance_cm(200, 500) # Go front 200 cm at 500 speed
+        wait(3000)
+        Funciones.move_distance_cm(-200, 500) # Go back 200 cm at 500 speed
+        wait(3000)
+    '''
+    kp_forward = 2.0  # Proportional gain for forward
+    kp_backward = 3.0  # Try higher gain for backward (tune as needed)
+    ki = 0.02  # Integral gain (tune as needed)
+    max_correction = 200  # Maximum correction value (deg/sec)
+    deadband = 0.5  # Ignore angle errors smaller than this (deg)
+    min_speed = 80  # Minimum speed (mm/s)
+    if max_speed < min_speed:
+        max_speed = min_speed
+
+    distance_mm = distance_cm * 10
+    initial_angle = gyro.angle()
+    robot.reset()
+
+    direction = 1 if distance_mm >= 0 else -1
+    total = abs(distance_mm)
+
+    def get_speed(pos):
+        # Accelerate for first 10%, cruise, decelerate for last 10%
+        accel_dist = total * 0.1
+        decel_dist = total * 0.1
+        cruise_start = accel_dist
+        cruise_end = total - decel_dist
+        if pos < cruise_start:
+            # Accelerate
+            return min_speed + (max_speed - min_speed) * (pos / accel_dist)
+        elif pos < cruise_end:
+            # Cruise
+            return max_speed
+        else:
+            # Decelerate
+            return min_speed + (max_speed - min_speed) * ((total - pos) / decel_dist)
+
+    integral = 0
+    while abs(robot.distance()) < total:
+        pos = abs(robot.distance())
+        speed = get_speed(pos) * direction
+        angle_error = gyro.angle() - initial_angle
+        # Deadband: ignore very small errors
+        if abs(angle_error) < deadband:
+            angle_error = 0
+        # Integral term (anti-windup: only accumulate if error is not zero)
+        if angle_error != 0:
+            integral += angle_error
+        else:
+            integral = 0
+        # Correction calculation
+        if direction == 1:
+            correction = -kp_forward * angle_error - ki * integral
+        else:
+            correction = -kp_backward * angle_error - ki * integral  # Try same sign, higher gain
+        # Limit correction
+        if correction > max_correction:
+            correction = max_correction
+        elif correction < -max_correction:
+            correction = -max_correction
+        robot.drive(speed, correction)
+        wait(10)
+    robot.stop()
+
+
+def line_follower_pid(base_speed=300, kp=300.0, ki=0, kd=50):
+    '''
+    PID line follower using weighted average of all sensors.
+    The robot tries to keep the line centered between sensors 3 and 4.
+    Runs indefinitely (while True).4
+    '''
+    num_sensors = 8
+    positions = [i for i in range(num_sensors)]
+    integral = 0
+    last_error = 0
+    last_time = time.time()
+    while True:
+        try:
+            values = leer_array_sensor()
+            #print(values)
+        except Exception:
+            print("Error reading light sensor values")
+            continue
+
+
+        weights = [100 - v for v in values]
+        total_weight = sum(weights)
+        if total_weight == 0:
+            error = 0
+        else:
+            line_pos = sum(w * p for w, p in zip(weights, positions)) / total_weight
+            error = line_pos - 3.5
+        #print(error)
+        #wait(1000)
+        now = time.time()
+        dt = now - last_time if last_time else 0.01
+        integral += error * dt
+        derivative = (error - last_error) / dt if dt > 0 else 0
+        correction = kp * error + ki * integral + kd * derivative
+        print(correction)
+        last_error = error
+        last_time = now
+        left_speed = base_speed + correction
+        right_speed = base_speed - correction
+        #left_speed = max(-300, min(300, left_speed))
+        #right_speed = max(-300, min(300, right_speed))
+        motor_izquierdo.run(left_speed)
+        motor_derecho.run(right_speed)
+        wait(10)
+
+def line_follower_pid_time(run_time, base_speed=300, kp=300.0, ki=0, kd=50):
+    '''
+    PID line follower using weighted average of all sensors.
+    The robot tries to keep the line centered between sensors 3 and 4.
+    Runs for run_time seconds.
+    '''
+    num_sensors = 8
+    positions = [i for i in range(num_sensors)]
+    integral = 0
+    last_error = 0
+    last_time = time.time()
+    start_time = last_time
+    while (time.time() - start_time) < run_time:
+        try:
+            values = leer_array_sensor()
+        except Exception:
+            print("Error reading light sensor values")
+            continue
+        weights = [100 - v for v in values]
+        total_weight = sum(weights)
+        if total_weight == 0:
+            error = 0
+        else:
+            line_pos = sum(w * p for w, p in zip(weights, positions)) / total_weight
+            error = line_pos - 3.5
+        now = time.time()
+        dt = now - last_time if last_time else 0.01
+        integral += error * dt
+        derivative = (error - last_error) / dt if dt > 0 else 0
+        correction = kp * error + ki * integral + kd * derivative
+        last_error = error
+        last_time = now
+        left_speed = base_speed + correction
+        right_speed = base_speed - correction
+        motor_izquierdo.run(left_speed)
+        motor_derecho.run(right_speed)
+        wait(10)
+    motor_izquierdo.stop()
+    motor_derecho.stop()
+
+
+def line_follower_intersections(base_speed=300, kp=300.0, ki=0, kd=50, threshold=30):
+    '''
+    PID line follower using weighted average of all sensors.
+    The robot tries to keep the line centered between sensors 3 and 4.
+    Runs indefinitely (while True).4
+    '''
+    full_intersection_count = 0
+    left_intersection = 0
+    right_intersection = 0
+    num_sensors = 8
+    positions = [i for i in range(num_sensors)]
+    integral = 0
+    last_error = 0
+    last_time = time.time()
+    while True:
+        try:
+            values = leer_array_sensor()
+            #print(values)
+        except Exception:
+            print("Error reading light sensor values")
+            continue
+
+        weights = [100 - v for v in values]
+        total_weight = sum(weights)
+        if total_weight == 0:
+            error = 0
+        else:
+            line_pos = sum(w * p for w, p in zip(weights, positions)) / total_weight
+            error = line_pos - 3.5
+        now = time.time()
+        dt = now - last_time if last_time else 0.01
+        integral += error * dt
+        derivative = (error - last_error) / dt if dt > 0 else 0
+        correction = kp * error + ki * integral + kd * derivative
+        print(correction)
+        last_error = error
+        last_time = now
+        left_speed = base_speed + correction
+        right_speed = base_speed - correction
+        motor_izquierdo.run(left_speed)
+        motor_derecho.run(right_speed)
+        full_black = all(v < threshold for v in values)
+        if full_black:
+            # The 3 line below stop the robot in intersection, change this if needed
+            motor_izquierdo.stop()
+            motor_derecho.stop()
+            wait(3000)
+            if full_intersection_count == 1:
+                pass
+            if full_intersection_count == 2:
+                pass
+        left_black = all(values[i] < threshold for i in range(4))
+        if left_black:
+            # The 3 line below stop the robot in intersection, change this if needed
+            motor_izquierdo.stop()
+            motor_derecho.stop()
+            wait(3000)
+            if left_intersection == 1:
+                pass
+            if left_intersection == 2:
+                pass
+        right_black = all(values[i] < threshold for i in range(4,8))
+        if right_black:
+            # The 3 line below stop the robot in intersection, change this if needed
+            motor_izquierdo.stop()
+            motor_derecho.stop()
+            wait(3000)
+            if right_intersection == 1:
+                pass
+            if right_intersection == 2:
+                pass
+        wait(10)
+
+def go_to_full_intersection(base_speed=200, black_threshold=30):
+    '''
+    Drive forward using DriveBase (robot) until all light sensors detect black (intersection).
+    base_speed: speed in mm/s
+    black_threshold: value below which a sensor is considered to see black (tune for your sensor)
+    '''
+    robot.reset()
+    while True:
+        values = leer_array_sensor()
+        # If all sensors see black (value < threshold), stop
+        if all(v < black_threshold for v in values):
+            motor_izquierdo.stop()
+            motor_derecho.stop()
+            break
+        robot.drive(base_speed, 0)
+        wait(10)
