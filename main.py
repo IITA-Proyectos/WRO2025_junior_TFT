@@ -30,14 +30,14 @@ if __name__ == "__main__":
     Funciones.mover_con_pid_sin_reiniciar(-180,0)   #abre la caja
     Funciones.subir_brazo(30)                       #abre la caja
     Funciones.mover_con_pid_sin_reiniciar(-20,0)    #abre la caja
-    Funciones.subir_brazo(30)                       #abre la caja
-    Funciones.mover_con_pid_sin_reiniciar(-30,0)    #abre la caja
+    Funciones.subir_brazo(20)                       #abre la caja
+    Funciones.mover_con_pid_sin_reiniciar(-40,0)    #abre la caja
     Funciones.subir_brazo(30)                       #abre la caja
     #Funciones.mover_con_pid_sin_reiniciar(-50,0)   #por si falta para termina de abrir
     Funciones.subir_pala(110)                       #deposita las pelotitas
     Funciones.mover_con_pid_sin_reiniciar(200,0)    #se aleja 20 cm
-    Funciones.giro_izq(-20)                         #gira para acomodarse
-    Funciones.mover_con_pid_sin_reiniciar(400,-20)  #abanza para ir a los bloques de colores
+    Funciones.giro_izq(-15)                         #gira para acomodarse
+    Funciones.mover_con_pid_sin_reiniciar(500,-15)  #abanza para ir a los bloques de colores
     Funciones.giro_der(90)                          #gira para ir a los bloques de colores
     Funciones.mover_con_pid_sin_reiniciar(-100,90)  #retrocede y acomoda con la pared
     detectar_bloques()                              #recoge todos los valores de color
