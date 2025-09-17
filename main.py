@@ -7,7 +7,7 @@ from tomi_camarita.camara import detectar_bloques
 
 if __name__ == "__main__":
     Funciones.mover_con_pid_sin_reiniciar(270,0)    #Avanza al primer punto
-    Funciones.giro_izq(-90,500)                         #gira 90 a la izquierda
+    Funciones.giro_izq(-90)                         #gira 90 a la izquierda
     Funciones.mover_con_pid_sin_reiniciar(-100,-90) #
     Funciones.mover_con_pid_sin_reiniciar(380,-90)  #avanza hacia el rover
     Funciones.giro_izq(-180)                        #gira mirando a las pelotitas
