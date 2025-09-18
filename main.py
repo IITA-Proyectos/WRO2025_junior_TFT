@@ -27,14 +27,14 @@ if __name__ == "__main__":
     Funciones.giro_der(0)                           #gira 0 a la derecha
     Funciones.mover_con_pid_sin_reiniciar(100,0)    #avanza para acomodar el brazo abao de la caja
     Funciones.bajar_brazo(95)                       #baja el brazo
-    Funciones.mover_con_pid_sin_reiniciar(-180,0)   #abre la caja
-    Funciones.subir_brazo(30)                       #abre la caja
+    Funciones.mover_con_pid_sin_reiniciar(-195,0)   #abre la caja
+    Funciones.subir_brazo(25)                       #abre la caja
     Funciones.mover_con_pid_sin_reiniciar(-20,0)    #abre la caja
     Funciones.subir_brazo(20)                       #abre la caja
     Funciones.mover_con_pid_sin_reiniciar(-40,0)    #abre la caja
     Funciones.subir_brazo(30)                       #abre la caja
     #Funciones.mover_con_pid_sin_reiniciar(-50,0)   #por si falta para termina de abrir
-    Funciones.subir_pala(110)                       #deposita las pelotitas
+    Funciones.subir_pala(160)                       #deposita las pelotitas
     Funciones.mover_con_pid_sin_reiniciar(200,0)    #se aleja 20 cm
     Funciones.giro_izq(-15)                         #gira para acomodarse
     Funciones.mover_con_pid_sin_reiniciar(500,-15)  #abanza para ir a los bloques de colores
