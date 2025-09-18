@@ -20,6 +20,7 @@ def mover_con_pid_sin_reiniciar(distancia_mm, angulo, velocidad=100, kp=1, ki=0.
 
 
 def giro_izq(angulo, velocidad=200):
+    angulo = angulo + 1
     reloj = StopWatch()
     while gyro.angle() >= angulo and reloj.time() < 6000:
         motor_izquierdo.run(-velocidad)
@@ -27,7 +28,7 @@ def giro_izq(angulo, velocidad=200):
         wait(1)
     motor_izquierdo.stop()
     motor_derecho.stop()
-    error = angulo - 1 - gyro.angle()
+    error = angulo - gyro.angle()
     while abs(error) > 1:
         direction = 1 if error > 0 else -1
         motor_izquierdo.run(-direction * 20)
@@ -39,14 +40,24 @@ def giro_izq(angulo, velocidad=200):
     print(gyro.angle())
 
 def giro_der(angulo, velocidad=200):
+    angulo = angulo - 1
     reloj = StopWatch()
     while gyro.angle() <= angulo and reloj.time() < 6000:
-        motor_izquierdo.run(velocidad)   # Izquierda hacia adelante
-        motor_derecho.run(-velocidad)    # Derecha hacia atrás
+        motor_izquierdo.run(velocidad)
+        motor_derecho.run(-velocidad)
         wait(1)
     motor_izquierdo.stop()
     motor_derecho.stop()
-    wait(300)
+    error = angulo - gyro.angle()
+    while abs(error) > 1:
+        direction = 1 if error > 0 else -1
+        motor_izquierdo.run(-direction * 20)
+        motor_derecho.run(-direction * 20)
+        error = angulo - 1 - gyro.angle()
+        wait(0.01)
+    motor_izquierdo.stop()
+    motor_derecho.stop()
+    print(gyro.angle())
 
 # Control del brazo
 def subir_brazo(altura):
@@ -422,4 +433,3 @@ def go_to_right_intersection(base_speed=200, black_threshold=50):
         if all(values[i] < black_threshold for i in range(4,8)):
             robot.stop()
             break
-
