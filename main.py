@@ -22,6 +22,7 @@ if __name__ == "__main__":
     Funciones.bajar_pala(80)                        #vuelve a bajar pala
     Funciones.mover_con_pid_sin_reiniciar(100,-180) #va a juntar la otra pelota
     Funciones.mover_con_pid_sin_reiniciar(-150,-180)#retrocede para irse a dejarlas
+    Funciones.subir_pala(40)                        #sube para que no se caiga la pelota
     Funciones.giro_der(-90)                         #gira 90 a la derecha
     Funciones.mover_con_pid_sin_reiniciar(380,-90)  #avanza a dejar las pelotas
     Funciones.giro_der(0)                           #gira 0 a la derecha
@@ -32,15 +33,16 @@ if __name__ == "__main__":
     Funciones.mover_con_pid_sin_reiniciar(-30,0)    #abre la caja
     Funciones.subir_brazo(20)                       #abre la caja
     Funciones.mover_con_pid_sin_reiniciar(-40,0)    #abre la caja
-    Funciones.subir_brazo(25)                       #abre la caja
+    Funciones.subir_brazo(10)                       #abre la caja
     #Funciones.mover_con_pid_sin_reiniciar(-50,0)   #por si falta para termina de abrir
-    Funciones.subir_pala(150)                       #deposita las pelotitas
+    Funciones.subir_pala(110)                       #deposita las pelotitas
     Funciones.mover_con_pid_sin_reiniciar(200,0)    #se aleja 20 cm
     Funciones.giro_izq(-15)                         #gira para acomodarse
     Funciones.mover_con_pid_sin_reiniciar(650,-15)  #abanza para ir a los bloques de colores
     Funciones.giro_der(90)                          #gira para ir a los bloques de colores
     Funciones.mover_con_pid_sin_reiniciar(-100,90)  #retrocede y acomoda con la pared
     detectar_bloques()                              #recoge todos los valores de color
+   #
     Funciones.mover_con_pid_sin_reiniciar(50,90)    #avanza hacia dron
     Funciones.giro_der(-180)                        #gira para ir hasta el dron
     Funciones.mover_con_pid_sin_reiniciar(850,-180) #abanza para dejar el dron
