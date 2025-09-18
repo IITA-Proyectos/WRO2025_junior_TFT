@@ -28,7 +28,7 @@ if __name__ == "__main__":
     Funciones.giro_der(0)                           #gira 0 a la derecha
     Funciones.mover_con_pid_sin_reiniciar(100,0)    #avanza para acomodar el brazo abao de la caja
     Funciones.bajar_brazo(95)                       #baja el brazo
-    Funciones.mover_con_pid_sin_reiniciar(-195,0)   #abre la caja
+    Funciones.mover_con_pid_sin_reiniciar(-185,0)   #abre la caja
     Funciones.subir_brazo(25)                       #abre la caja
     Funciones.mover_con_pid_sin_reiniciar(-30,0)    #abre la caja
     Funciones.subir_brazo(20)                       #abre la caja
