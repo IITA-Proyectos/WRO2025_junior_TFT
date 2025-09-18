@@ -39,6 +39,7 @@ if __name__ == "__main__":
     Funciones.mover_con_pid_sin_reiniciar(200,0)    #se aleja 20 cm
     Funciones.giro_izq(-15)                         #gira para acomodarse
     Funciones.mover_con_pid_sin_reiniciar(650,-15)  #abanza para ir a los bloques de colores
+    Funciones.go_to_full_intersection()
     Funciones.giro_der(90)                          #gira para ir a los bloques de colores
     Funciones.mover_con_pid_sin_reiniciar(-100,90)  #retrocede y acomoda con la pared
     detectar_bloques()                              #recoge todos los valores de color
@@ -51,6 +52,15 @@ if __name__ == "__main__":
     Funciones.mover_con_pid_sin_reiniciar(-100,-90) #retrocede y se acomoda
     Funciones.mover_con_pid_sin_reiniciar(30,-90)   #se mueve adelante para buscar bloques
     Funciones.bajar_pala(75)                        #baja la pala
+
+
+
+
+
+
+
+
+
 
 
 
