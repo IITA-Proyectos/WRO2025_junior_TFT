@@ -118,7 +118,6 @@ def turn_to_angle(target_angle, speed=200):
 
 
 def move_distance_cm(distance_cm, max_speed):
-
     '''
     Move the robot the given distance (in centimeters) using DriveBase (robot) with gyro correction for high precision.
     max_speed: mm/s (positive number)
@@ -187,9 +186,27 @@ def move_distance_cm(distance_cm, max_speed):
         robot.drive(speed, correction)
         wait(10)
     robot.stop()
+    # --- Correction step: align to initial angle if deviation remains ---
+    final_error = gyro.angle() - initial_angle
+    if abs(final_error) > 0.5:  # Only correct if error is significant (tune threshold as needed)
+        correction_speed = 60  # Slow speed for correction (deg/sec)
+        # Turn in place until aligned
+        if final_error > 0:
+            # Need to turn left
+            while gyro.angle() - initial_angle > 0.5:
+                motor_izquierdo.run(-correction_speed)
+                motor_derecho.run(correction_speed)
+                wait(10)
+        else:
+            # Need to turn right
+            while gyro.angle() - initial_angle < -0.5:
+                motor_izquierdo.run(correction_speed)
+                motor_derecho.run(-correction_speed)
+                wait(10)
+        robot.stop()
 
 
-def line_follower_pid(base_speed=300, kp=300.0, ki=0, kd=50):
+def line_follower_pid(base_speed=500, kp=800.0, ki=0, kd=200):
     '''
     PID line follower using weighted average of all sensors.
     The robot tries to keep the line centered between sensors 3 and 4.
@@ -207,7 +224,6 @@ def line_follower_pid(base_speed=300, kp=300.0, ki=0, kd=50):
         except Exception:
             print("Error reading light sensor values")
             continue
-
 
         weights = [100 - v for v in values]
         total_weight = sum(weights)
@@ -275,7 +291,7 @@ def line_follower_pid_time(run_time, base_speed=300, kp=300.0, ki=0, kd=50):
     motor_derecho.stop()
 
 
-def line_follower_intersections(base_speed=300, kp=300.0, ki=0, kd=50, threshold=30):
+def line_follower_intersections(base_speed=300, kp=400.0, ki=0, kd=100, threshold=50):
     '''
     PID line follower using weighted average of all sensors.
     The robot tries to keep the line centered between sensors 3 and 4.
@@ -309,7 +325,7 @@ def line_follower_intersections(base_speed=300, kp=300.0, ki=0, kd=50, threshold
         integral += error * dt
         derivative = (error - last_error) / dt if dt > 0 else 0
         correction = kp * error + ki * integral + kd * derivative
-        print(correction)
+        #print(correction)
         last_error = error
         last_time = now
         left_speed = base_speed + correction
@@ -318,37 +334,50 @@ def line_follower_intersections(base_speed=300, kp=300.0, ki=0, kd=50, threshold
         motor_derecho.run(right_speed)
         full_black = all(v < threshold for v in values)
         if full_black:
+            full_intersection_count += 1
+            print("Full intersection: ", full_intersection_count)
             # The 3 line below stop the robot in intersection, change this if needed
-            motor_izquierdo.stop()
-            motor_derecho.stop()
-            wait(3000)
+            #motor_izquierdo.stop()
+            #motor_derecho.stop()
+            #wait(3000)
             if full_intersection_count == 1:
-                pass
+                robot.stop()
+                wait(1000)
+                while True:
+                    ev3.speaker.beep(1000, 100)
+                    wait(1000)
             if full_intersection_count == 2:
                 pass
         left_black = all(values[i] < threshold for i in range(4))
         if left_black:
+            left_intersection += 1
+            print("left_intersection", left_intersection)
             # The 3 line below stop the robot in intersection, change this if needed
-            motor_izquierdo.stop()
-            motor_derecho.stop()
-            wait(3000)
+            #motor_izquierdo.stop()
+            #motor_derecho.stop()
+            #wait(50)
             if left_intersection == 1:
+                #robot.stop()
+                #turn_to_angle(-90)
+                #wait(100)
+                #move_distance_cm(2, 200)
                 pass
             if left_intersection == 2:
                 pass
         right_black = all(values[i] < threshold for i in range(4,8))
         if right_black:
+            right_intersection += 1
+            print("right_intersection", right_intersection)
             # The 3 line below stop the robot in intersection, change this if needed
-            motor_izquierdo.stop()
-            motor_derecho.stop()
-            wait(3000)
+            #motor_izquierdo.stop()
+            #motor_derecho.stop()
+            #wait(3000)
             if right_intersection == 1:
                 pass
             if right_intersection == 2:
                 pass
-        wait(10)
 
-def go_to_full_intersection(base_speed=200, black_threshold=30):
+def go_to_full_intersection(base_speed=200, black_threshold=50):
     '''
     Drive forward using DriveBase (robot) until all light sensors detect black (intersection).
     base_speed: speed in mm/s
@@ -357,10 +386,40 @@ def go_to_full_intersection(base_speed=200, black_threshold=30):
     robot.reset()
     while True:
         values = leer_array_sensor()
+        robot.drive(base_speed, 0)
         # If all sensors see black (value < threshold), stop
         if all(v < black_threshold for v in values):
-            motor_izquierdo.stop()
-            motor_derecho.stop()
+            robot.stop()
             break
+
+
+def go_to_left_intersection(base_speed=200, black_threshold=50):
+    '''
+    Drive forward using DriveBase (robot) until all light sensors detect black (intersection).
+    base_speed: speed in mm/s
+    black_threshold: value below which a sensor is considered to see black (tune for your sensor)
+    '''
+    robot.reset()
+    while True:
+        values = leer_array_sensor()
         robot.drive(base_speed, 0)
-        wait(10)
+        # If all sensors see black (value < threshold), stop
+        if all(values[i] < black_threshold for i in range(4)):
+            robot.stop()
+            break
+
+def go_to_right_intersection(base_speed=200, black_threshold=50):
+    '''
+    Drive forward using DriveBase (robot) until all light sensors detect black (intersection).
+    base_speed: speed in mm/s
+    black_threshold: value below which a sensor is considered to see black (tune for your sensor)
+    '''
+    robot.reset()
+    while True:
+        values = leer_array_sensor()
+        robot.drive(base_speed, 0)
+        # If all sensors see black (value < threshold), stop
+        if all(values[i] < black_threshold for i in range(4,8)):
+            robot.stop()
+            break
+

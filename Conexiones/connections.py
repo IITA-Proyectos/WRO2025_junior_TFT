@@ -25,8 +25,22 @@ brazo = Motor(Port.D, Direction.CLOCKWISE)                   # Mecanismo brazo
 robot = DriveBase(motor_izquierdo, motor_derecho, wheel_diameter=42, axle_track=220)
 
 
-# Sensor de Luz Array delantero
-light_sensor_frontal = I2CDevice(Port.S1, address = 0x14 >> 1)
+
+# Robust initialization for array light sensor
+def init_array_sensor(port=Port.S1, address=0x14 >> 1, retries=5, delay=500):
+    for attempt in range(retries):
+        try:
+            sensor = I2CDevice(port, address)
+            # Try a simple read to check if sensor responds
+            sensor.read(0x42, 1)
+            print("Array sensor initialized on attempt", attempt + 1)
+            return sensor
+        except Exception as e:
+            print("Array sensor init failed (attempt: ", attempt+1 , "): {", e, "}")
+            wait(delay)
+    raise Exception("Failed to initialize array sensor after several attempts. Try unplugging/replugging the sensor.")
+
+light_sensor_frontal = init_array_sensor()
 
 # ----------------- Inicializacion de Giroscopo -----------------
 # ----------------- Parámetros de calidad -----------------

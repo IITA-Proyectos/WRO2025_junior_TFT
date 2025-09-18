@@ -13,9 +13,10 @@ box_verde=0
 detecciones = []
 
 def detectar_bloques():
-    #move_distance_cm(23, 20) # Movimiento hasta el Primer box
-    Funciones.mover_con_pid_sin_reiniciar(23, 90)
-    wait(1000)
+    global box_amarillo, box_roja, box_blanca, box_verde
+    pixy2.set_lamp(1, 1)
+    Funciones.move_distance_cm(23, 100)
+    wait(200)
     # Repito la accion de detectar y avanzar 6 veces
     for i in range(6):
         pieza = detect_signature()
@@ -28,12 +29,10 @@ def detectar_bloques():
                 box_roja=i+1
             elif pieza=="yellow_box":
                 box_amarillo=i+1
-
         #detecciones.append(pieza)
         if i < 5: # Solo avanzo 5 veces, la sexta no
-            #move_distance_cm(9.3, 20)
-            Funciones.mover_con_pid_sin_reiniciar(9.3, 90)
-            wait(1000)
+            Funciones.move_distance_cm(9.3, 100)
+            wait(200)
 
     # Finalizo el bucle y limpio la lista de detecciones
     #detecciones = ["Vacio" if x is None else x for x in detecciones]
@@ -42,8 +41,6 @@ def detectar_bloques():
     print("rojo: ",box_roja)
     print("verde: ",box_verde)
     print("blanco: ",box_blanca)
-
-
 
 
 # Estos colores pueden cambiar, debe coincidir con los configurados en PixyMon
