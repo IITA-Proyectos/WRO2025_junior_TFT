@@ -16,13 +16,13 @@ if __name__ == "__main__":
     Funciones.mover_con_pid_sin_reiniciar(100,-180) #avanza para bajar el ala del rover
     Funciones.bajar_pala(260)                       #baja la pala
     Funciones.subir_brazo(85)                       #sube el brazo
-    Funciones.mover_con_pid_sin_reiniciar(250,-180) #avanza a juntar la primera pelota
+    Funciones.mover_con_pid_sin_reiniciar(220,-180) #avanza a juntar la primera pelota
     Funciones.mover_con_pid_sin_reiniciar(-100,-180)#retrocede para acomodar
     Funciones.subir_pala(80)                        #sube pala y acomoda la pelota
     Funciones.bajar_pala(80)                        #vuelve a bajar pala
-    Funciones.mover_con_pid_sin_reiniciar(100,-180) #va a juntar la otra pelota
+    Funciones.mover_con_pid_sin_reiniciar(80,-180) #va a juntar la otra pelota
     Funciones.mover_con_pid_sin_reiniciar(-150,-180)#retrocede para irse a dejarlas
-    Funciones.subir_pala(40)                        #sube para que no se caiga la pelota
+    Funciones.subir_pala(80)                        #sube para que no se caiga la pelota
     Funciones.giro_der(-90)                         #gira 90 a la derecha
     Funciones.mover_con_pid_sin_reiniciar(380,-90)  #avanza a dejar las pelotas
     Funciones.giro_der(0)                           #gira 0 a la derecha
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     Funciones.subir_pala(110)                       #deposita las pelotitas
     Funciones.mover_con_pid_sin_reiniciar(200,0)    #se aleja 20 cm
     Funciones.giro_izq(-15)                         #gira para acomodarse
-    Funciones.mover_con_pid_sin_reiniciar(650,-15)  #abanza para ir a los bloques de colores
+    Funciones.mover_con_pid_sin_reiniciar(600,-15)  #abanza para ir a los bloques de colores
     Funciones.go_to_full_intersection()
     Funciones.giro_der(90)                          #gira para ir a los bloques de colores
     Funciones.mover_con_pid_sin_reiniciar(-100,90)  #retrocede y acomoda con la pared
@@ -52,22 +52,3 @@ if __name__ == "__main__":
     Funciones.mover_con_pid_sin_reiniciar(-100,-90) #retrocede y se acomoda
     Funciones.mover_con_pid_sin_reiniciar(30,-90)   #se mueve adelante para buscar bloques
     Funciones.bajar_pala(75)                        #baja la pala
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
