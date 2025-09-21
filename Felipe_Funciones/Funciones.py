@@ -70,11 +70,11 @@ def bajar_brazo(altura):
 
 # Control de la pala
 def subir_pala(altura):
-    pala.run_angle(150, altura)    # Subir pala
+    pala.run_angle(200, altura)    # Subir pala
     wait(500)
 
 def bajar_pala(altura):
-    pala.run_angle(100, -altura)   # Bajar pala
+    pala.run_angle(200, -altura)   # Bajar pala
     wait(500)
 
 
