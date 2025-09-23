@@ -2,7 +2,7 @@
 from Conexiones.connections import *
 import math, time
 
-def mover_con_pid_sin_reiniciar(distancia_mm, angulo, velocidad=100, kp=1, ki=0.07, kd=0.1):
+def mover_con_pid_sin_reiniciar(distancia_mm, angulo, velocidad=200, kp=1, ki=0.07, kd=0.1):
     robot.reset()             # Reinicia medición de distancia
     target_angle = angulo     # Ángulo objetivo recto
     error_acum = 0            # Integral PID
