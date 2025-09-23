@@ -26,7 +26,7 @@ if __name__ == "__main__":
     Funciones.move_distance_cm(57, 300)              #deposita los tres bloques
     Funciones.move_distance_cm(-75, 400)             #Retrocede un metro para agarrar los otros tres bloques
     Funciones.turn_to_angle(90)
-    Funciones.move_distance_cm(80, 200)
+    Funciones.move_distance_cm(80, 200)              #Avanza hacia el dron
     Funciones.turn_to_angle(90)
     Funciones.move_distance_cm(100, 300)
     Funciones.move_distance_cm(-100, 300)
@@ -36,4 +36,4 @@ if __name__ == "__main__":
     Funciones.turn_to_angle(-90)
     Funciones.move_distance_cm(20, 200)
     motor_derecho.run_angle(400, 1800)
-    Funciones.move_distance_cm(100, 300)
+    Funciones.move_distance_cm(97, 300)             #Deja los ultimos bloques
