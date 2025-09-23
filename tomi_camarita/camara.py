@@ -5,10 +5,10 @@ Hello to the world from ev3dev.org
 from Conexiones.connections import *
 from Felipe_Funciones import Funciones
 
-box_amarillo=0
-box_roja=0
-box_blanca=0
-box_verde=0
+#box_amarillo=0
+#box_roja=0
+#box_blanca=0
+#box_verde=0
 
 detecciones = []
 
