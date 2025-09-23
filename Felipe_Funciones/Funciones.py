@@ -433,3 +433,14 @@ def go_to_right_intersection(base_speed=200, black_threshold=50):
         if all(values[i] < black_threshold for i in range(4,8)):
             robot.stop()
             break
+
+def esperar_boton():
+    print("Press touch to start")
+    while not touch_sensor.pressed():
+        wait(10)
+    # Debounce: wait for release
+    while touch_sensor.pressed():
+        wait(10)
+    ev3.speaker.beep()
+    wait(1000)
+    print("Running!")
