@@ -7,7 +7,6 @@ from tomi_camarita import camara
 
 
 if __name__ == "__main__":
-    global box_roja, box_amarillo, box_blanca, box_verde
     Funciones.esperar_boton()
     Funciones.mover_con_pid_sin_reiniciar(270,0)            #Avanza al primer punto
     Funciones.giro_izq(-90)                                 #gira 90 a la izquierda
