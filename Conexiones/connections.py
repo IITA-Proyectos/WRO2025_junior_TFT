@@ -9,6 +9,11 @@ from pybricks.robotics import DriveBase           # Control de movimiento tipo c
 from pybricks.iodevices import I2CDevice
 from pixycamev3.pixy2 import Pixy2
 
+box_amarillo=0
+box_roja=0
+box_blanca=0
+box_verde=0
+
 # Camarita Pixycam
 pixy2 = Pixy2(port=4, i2c_address=0x54)
 
