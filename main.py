@@ -59,14 +59,14 @@ if __name__ == "__main__":
     Funciones.giro_izq(-180)                         #gira mirando a las pelotitas
     Funciones.mover_con_pid_sin_reiniciar(-90, -180) #retrocede llendo hacia el rover
     Funciones.bajar_brazo(95)                        #baja el brazo
-    Funciones.mover_con_pid_sin_reiniciar(100, -180) #avanza para bajar el ala del rover
+    Funciones.mover_con_pid_sin_reiniciar(100, -180) #baja el panel solar
     Funciones.subir_brazo(85)                        #sube el brazo
-    Funciones.turn_to_angle(90)
-    Funciones.mover_con_pid_sin_reiniciar(200, -90)
-    Funciones.turn_to_angle(90)
-    Funciones.move_distance_cm(100, 200)
-    Funciones.turn_to_angle(-90)
-    Funciones.move_distance_cm(35, 200)
-    Funciones.turn_to_angle(90)
-    Funciones.move_distance_cm(40, 200)
-    Funciones.move_distance_cm(-40, 400)
+    Funciones.turn_to_angle(90)                      #
+    Funciones.mover_con_pid_sin_reiniciar(200, -90)  #avanza a la mitad de las pelotas y la caja
+    Funciones.turn_to_angle(90)                      #
+    Funciones.move_distance_cm(100, 200)             #agarra 3 bloques como max y va hasta el fondo
+    Funciones.turn_to_angle(-90)                     #Se acomoda para llevar las pelotas
+    Funciones.move_distance_cm(35, 200)              #'''
+    Funciones.turn_to_angle(90)                      #'''
+    Funciones.move_distance_cm(40, 300)              #deposita los tres bloques
+    Funciones.move_distance_cm(-100, 400)            #Retrocede un metro para agarrar los otros tres bloques
