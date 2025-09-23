@@ -1,48 +1,14 @@
 #!/usr/bin/env pybricks-micropython
-
-from pybricks.hubs import EV3Brick        # Control del ladrillo EV3
-from pybricks.ev3devices import Motor, GyroSensor  # Motores y giroscopio
-from pybricks.parameters import Port, Direction   # Puertos y direcciones de giro
-from pybricks.tools import wait, StopWatch        # Pausa y cronómetro
-from pybricks.robotics import DriveBase           # Control de movimiento tipo coche
+from Conexiones.connections import *
 from Felipe_Funciones import Funciones
 from tomi_camarita import camara
 
-# Inicializar ladrillo EV3
-ev3 = EV3Brick()
-
-# Motores de conducción y accesorios
-motor_izquierdo = Motor(Port.A, Direction.COUNTERCLOCKWISE)  # Rueda izquierda
-motor_derecho = Motor(Port.B)                                # Rueda derecha
-pala = Motor(Port.C, Direction.CLOCKWISE)                    # Mecanismo pala
-brazo = Motor(Port.D, Direction.CLOCKWISE)                   # Mecanismo brazo
-
-# Base de conducción (DriveBase)
-robot = DriveBase(motor_izquierdo, motor_derecho, wheel_diameter=42, axle_track=220)
-
-# Control del brazo
-def subir_brazo(altura):
-    brazo.run_angle(100, -altura)  # Subir brazo
-    wait(500)
-
-def bajar_brazo(altura):
-    brazo.run_angle(100, altura)   # Bajar brazo
-    wait(500)
-
-# Control de la pala
-def subir_pala(altura):
-    pala.run_angle(150, altura)    # Subir pala
-    wait(500)
-
-def bajar_pala(altura):
-    pala.run_angle(100, -altura)   # Bajar pala
-    wait(500)
 
 
-# mover_con_pid_sin_reiniciar(distancia_mm, angulo, velocidad=100, kp=1, ki=0.07, kd=0.1):
-# giro_der(angulo, velocidad=200):
-# giro_izq(angulo, velocidad=200):
 
+if __name__ == "__main__":
+    global box_roja, box_amarillo, box_blanca, box_verde
+Funciones.esperar_boton()
 Funciones.mover_con_pid_sin_reiniciar(270,0)    #Avanza al primer punto
 Funciones.giro_izq(-90)                         #gira 90 a la izquierda
 Funciones.mover_con_pid_sin_reiniciar(325,-90)  #avanza hacia el rover
@@ -85,7 +51,7 @@ Funciones.giro_der(180)                         #gira para ir hasta el dron
 Funciones.mover_con_pid_sin_reiniciar(850,-180) #abanza para dejar el dron
 Funciones.mover_con_pid_sin_reiniciar(-850,-180)#retrocede para buscar los bloques
 Funciones.bajar_pala(220)                       #baja pala para juntar bloques
-Funciones.mover_con_pid_sin_reiniciar(93*box_rojo,-90)
+Funciones.mover_con_pid_sin_reiniciar(93*box_roja,-90)
 
 
 
