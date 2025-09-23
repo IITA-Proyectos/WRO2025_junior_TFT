@@ -2,7 +2,7 @@
 #!/usr/bin/env pybricks-micropython
 
 from pybricks.hubs import EV3Brick        # Control del ladrillo EV3
-from pybricks.ev3devices import Motor, GyroSensor  # Motores y giroscopio
+from pybricks.ev3devices import Motor, GyroSensor, TouchSensor  # Motores y giroscopio
 from pybricks.parameters import Port, Direction   # Puertos y direcciones de giro
 from pybricks.tools import wait, StopWatch        # Pausa y cronómetro
 from pybricks.robotics import DriveBase           # Control de movimiento tipo coche
@@ -143,3 +143,5 @@ def init_gyro(port=Port.S1, attempts=MAX_ATTEMPTS):
 
 # ----------------- Ejemplo de uso -----------------
 gyro, ok, info = init_gyro(Port.S2)
+
+touch_sensor = TouchSensor(Port.S3)

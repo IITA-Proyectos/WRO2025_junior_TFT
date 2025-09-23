@@ -6,6 +6,7 @@ from tomi_camarita.camara import detectar_bloques
 
 
 if __name__ == "__main__":
+    Funciones.esperar_boton()
     Funciones.move_distance_cm(10, 200) # Avanza para salir de la zona de salida
     #Funciones.line_follower_pid_time(2)
     Funciones.go_to_left_intersection() # Avanza hsata la primera interseccion izquierda
