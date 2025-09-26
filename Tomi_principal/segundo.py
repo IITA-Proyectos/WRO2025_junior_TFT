@@ -53,7 +53,7 @@ if __name__ == "__main__":
     Funciones.subir_pala(80)                                #sube la pala y lo junta
     Funciones.mover_con_pid_sin_reiniciar(-70)              #retrocede para buscar otro bloque
     Funciones.mover_con_pid_sin_reiniciar(-93*camara.box_roja,-90)#retrocede al inicio del dron
-    Funciones.mover_con_pid_sin_reiniciar(-93*camara.box_amarillo,-90)#
+    Funciones.mover_con_pid_sin_reiniciar(-93*camara.box_amarillo,-90)#avanza hasta el box amarillo
 
 
 

@@ -1,13 +1,13 @@
 #!/usr/bin/env pybricks-micropython
 from Conexiones.connections import *
 from Felipe_Funciones import Funciones
-from tomi_camarita.camara import detectar_bloques
+from tomi_camarita import camara
 
 
 
 if __name__ == "__main__":
     Funciones.esperar_boton()
-    Funciones.mover_con_pid_sin_reiniciar(270, 0)    #Avanza al primer punto
+    Funciones.move_distance_cm(27, 300)    #Avanza al primer punto
     Funciones.giro_izq(-90)                          #gira 90 a la izquierda
     Funciones.mover_con_pid_sin_reiniciar(-100, -90) #
     Funciones.mover_con_pid_sin_reiniciar(380, -90)  #avanza hacia el rover
